@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Timeline</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+	<!-- Font Awesome -->
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+    <style>        
+        /* Excel-like Table Styling */
+        .excel-table th, .excel-table td {
+            vertical-align: middle;
+            text-align: center;
+            border: 1px solid #dee2e6; /* Bootstrap default border */
+            font-size: 13px;
+            padding: 8px;
+        }
+
+        .loading-spinner {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 200px;
+            font-size: 1.2rem;
+            color: #6c757d;
+        }
+    </style>
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+  <div class="container">
+    <a class="navbar-brand d-flex align-items-center" href="#">
+      <i class="fa fa-cogs me-2 text-danger" style="font-size:1.35rem"></i>
+      <div>
+        <div class="fw-bold">Solusi PM Bersama</div>
+        <small class="text-muted">Mempermudah persentasi proyek manager</small>
+      </div>
+    </a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navMenu">
+      <ul class="navbar-nav ms-auto align-items-lg-center">
+        <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
+        <li class="nav-item"><a class="nav-link active" href="timeline.html">Timeline</a></li>
+        <li class="nav-item"><a class="nav-link" href="fase-development.html">Fase Development</a></li>
+        <li class="nav-item"><a class="nav-link" href="notes-perubahan.html">Notes Perubahan</a></li>
+      </ul>
+      <a class="btn btn-outline-primary ms-3 d-none d-lg-inline active" href="timeline.html">Buka Timeline</a>
+    </div>
+  </div>
+</nav>
+
+<div class="container mt-4">
+	<h2 class="mb-4 text-center fw-bold">Timeline</h2>
+
+    <div id="table-container" class="overflow-x-scroll">
+        <div class="loading-spinner">
+            <div class="spinner-border text-primary me-2" role="status"></div>
+            <span>Fetching JSON from Apps Script...</span>
+        </div>
+    </div>
+</div>
+
+<!-- jQuery -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+    // ==========================================
+    // CONFIGURATION
+    // ==========================================
+    // Replace this with your actual Google Apps Script Web App URL
+    // Ensure you deployed it as "Execute as: Me" and "Who has access: Anyone"
+    const API_URL = "https://script.google.com/macros/s/AKfycbzkwUKk23p7hThm-cz4vRoqaqL_dTMdtncler_Oa_N8nQ7AqdxxVp0vV7-XeHLsBZS4VQ/exec"; 
+
+    $(document).ready(function() {
+        fetchDataAndRender();
+    });
+
+    function fetchDataAndRender() {
+        // Using jQuery AJAX to fetch the JSON
+        $.ajax({
+            url: API_URL+"?action=timeline",
+            type: "GET",
+            dataType: "json", // Expect JSON response
+            success: function(data) {
+                renderTable(data);
+            },
+            error: function(xhr, status, error) {
+                // Common error: CORS. 
+                // Note: Google Apps Script redirects. Simple $.ajax sometimes fails on redirects without specific settings.
+                // However, 'dataType: json' usually handles the redirect chain for public scripts.
+                console.error("Error fetching data:", error);
+                $('#table-container').html(`
+                    <div class="alert alert-danger">
+                        <strong>Failed to load data.</strong><br>
+                        Check console for details. Ensure your Apps Script is deployed as "Anyone".
+                    </div>
+                `);
+            }
+        });
+    }
+
+    function renderTable(data) {
+        if (!data || data.length === 0) {
+            $('#table-container').html('<div class="alert alert-warning">No data received.</div>');
+            return;
+        }
+
+        let tableHtml = '<table class="table table-bordered excel-table mb-0">';
+        
+        // Loop through rows
+        data.forEach((row, rowIndex) => {
+            tableHtml += '<tr>';
+            
+            // Loop through cells
+            row.forEach(cell => {
+                // 1. Calculate inline styles based on JSON data
+                let style = '';
+                if (cell.bg && cell.bg !== '#ffffff') {
+                    style += `background-color: ${cell.bg}; `;
+                }
+                if (cell.color && cell.color !== '#000000') {
+                    style += `color: ${cell.color}; `;
+                }
+                if (cell.bold) {
+                    style += 'font-weight: bold; ';
+                }
+
+                // 2. Build Attributes for Merging (Rowspan/Colspan)
+                let attrs = '';
+                if (cell.rowSpan > 1) attrs += ` rowspan="${cell.rowSpan}"`;
+                if (cell.colSpan > 1) attrs += ` colspan="${cell.colSpan}"`;
+                
+                // 3. Render Cell
+                // Note: We use style attribute for specific colors, 
+                // but you could also map hex codes to Bootstrap classes if preferred.
+                tableHtml += `<td style="${style}" ${attrs}>${cell.value}</td>`;
+            });
+            
+            tableHtml += '</tr>';
+        });
+        
+        tableHtml += '</table>';
+        
+        // Inject into DOM
+        $('#table-container').html(tableHtml);
+    }
+</script>
+
+<footer class="bg-white border-top py-4">
+  <div class="container d-flex justify-content-between align-items-center">
+    <div class="small text-muted">© 2025 Solusi Tiga Bersama. All Rights Reserved</div>
+    <div>
+      <a class="text-muted me-3" href="#">Privacy</a>
+      <a class="text-muted" href="#">Terms</a>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
