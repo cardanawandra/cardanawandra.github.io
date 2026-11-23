@@ -1,0 +1,13 @@
+{
+  "formAction": "https://docs.google.com/forms/d/e/1FAIpQLSdOuXrn-txh_-GhRYlcLX0wJ01XFoebEZR42Slrhyc0BEEtiA/formResponse",
+  "fields": {
+    "name": "entry.105645271",
+    "phone": "entry.52628953",
+    "address": "entry.233278481",
+    "cart_json": "entry.1739016906",
+    "method": "entry.1077738159"
+  },
+  "menuURL": "/public/menu-export/menu.json",
+  "shopName": "My Shop",
+  "shopDescription": "Order your favorite products online"
+}

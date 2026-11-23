@@ -1,0 +1,46 @@
+{
+  "shop_name": "My E-Shop",
+  "shop_description": "Welcome to our online shop!",
+  "categories": [
+    {
+      "id": 1,
+      "name": "Makanan",
+      "image": "/public/menu-export/img/category-1.png",
+      "products": null,
+      "children": [
+        {
+          "id": 2,
+          "name": "Berat",
+          "image": "/public/menu-export/img/category-2.jpg",
+          "products": [
+            {
+              "id": 3,
+              "name": "Berat Sekali",
+              "description": "dwdw adawdad",
+              "price": 2000,
+              "stock": 15,
+              "image": "/public/menu-export/img/product-3.jpg"
+            }
+          ],
+          "children": null
+        },
+        {
+          "id": 3,
+          "name": "Ringan",
+          "image": "/public/menu-export/img/category-3.jpg",
+          "products": [
+            {
+              "id": 2,
+              "name": "Ringan Sekali",
+              "description": "awd awdad awdawdw",
+              "price": 1000,
+              "stock": 18,
+              "image": "/public/menu-export/img/product-2.jpg"
+            }
+          ],
+          "children": null
+        }
+      ]
+    }
+  ]
+}
